@@ -86,6 +86,8 @@ async function pollForToken(
       session.status = "expired"
       session.error = "Device code expired"
       consola.warn(`Auth session ${sessionId} expired`)
+      // Schedule cleanup after a short delay so callers can still read the status
+      setTimeout(() => sessions.delete(sessionId), 60_000)
       return
     }
 

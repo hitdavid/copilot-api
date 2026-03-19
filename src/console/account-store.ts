@@ -42,7 +42,7 @@ async function readStore(): Promise<AccountStore> {
 }
 
 async function writeStore(store: AccountStore): Promise<void> {
-  await fs.writeFile(STORE_PATH, JSON.stringify(store, null, 2))
+  await fs.writeFile(STORE_PATH, JSON.stringify(store, null, 2), { mode: 0o600 })
 }
 
 export async function getAccounts(): Promise<Array<Account>> {

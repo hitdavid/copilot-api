@@ -27,7 +27,7 @@ async function readStore(): Promise<AdminStore> {
 }
 
 async function writeStore(store: AdminStore): Promise<void> {
-  await fs.writeFile(STORE_PATH, JSON.stringify(store, null, 2))
+  await fs.writeFile(STORE_PATH, JSON.stringify(store, null, 2), { mode: 0o600 })
 }
 
 export async function isSetupRequired(): Promise<boolean> {

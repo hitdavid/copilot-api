@@ -41,6 +41,14 @@ function formatZodError(err: z.ZodError): string {
     : err.message
 }
 
+function sanitizeAccount<T extends { githubToken: string }>(
+  account: T,
+): Omit<T, "githubToken"> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { githubToken, ...rest } = account
+  return rest
+}
+
 export const consoleApi = new Hono()
 
 consoleApi.use(cors())
@@ -91,7 +99,7 @@ consoleApi.post("/auth/login", async (c) => {
 // Admin auth middleware (session token)
 consoleApi.use("/*", async (c, next) => {
   const auth = c.req.header("authorization")
-  const token = auth?.replace("Bearer ", "")
+  const token = auth?.replace(/^Bearer\s+/i, "")
   if (!token || !(await validateSession(token))) {
     return c.json({ error: "Unauthorized" }, 401)
   }
@@ -116,7 +124,7 @@ consoleApi.get("/accounts", async (c) => {
           /* ignore */
         }
       }
-      return { ...account, status, error, user }
+      return { ...sanitizeAccount(account), status, error, user }
     }),
   )
   return c.json(result)
@@ -158,7 +166,7 @@ consoleApi.get("/accounts/:id", async (c) => {
   if (!account) return c.json({ error: "Account not found" }, 404)
   const status = getInstanceStatus(account.id)
   const error = getInstanceError(account.id)
-  return c.json({ ...account, status, error })
+  return c.json({ ...sanitizeAccount(account), status, error })
 })
 
 const AddAccountSchema = z.object({
@@ -177,7 +185,7 @@ consoleApi.post("/accounts", async (c) => {
     return c.json({ error: formatZodError(parsed.error) }, 400)
   }
   const account = await addAccount(parsed.data)
-  return c.json(account, 201)
+  return c.json(sanitizeAccount(account), 201)
 })
 
 const UpdateAccountSchema = z.object({
@@ -197,7 +205,7 @@ consoleApi.put("/accounts/:id", async (c) => {
   }
   const account = await updateAccount(c.req.param("id"), parsed.data)
   if (!account) return c.json({ error: "Account not found" }, 404)
-  return c.json(account)
+  return c.json(sanitizeAccount(account))
 })
 
 // Delete account
@@ -213,7 +221,7 @@ consoleApi.delete("/accounts/:id", async (c) => {
 consoleApi.post("/accounts/:id/regenerate-key", async (c) => {
   const account = await regenerateApiKey(c.req.param("id"))
   if (!account) return c.json({ error: "Account not found" }, 404)
-  return c.json(account)
+  return c.json(sanitizeAccount(account))
 })
 
 // Start instance
@@ -291,7 +299,7 @@ consoleApi.post("/auth/complete", async (c) => {
   })
 
   cleanupSession(parsed.data.sessionId)
-  return c.json(account, 201)
+  return c.json(sanitizeAccount(account), 201)
 })
 
 // === Pool Configuration ===
