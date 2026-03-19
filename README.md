@@ -376,6 +376,76 @@ bun run dev
 bun run start
 ```
 
+### Build from Source
+
+To compile the project into `dist/`:
+
+```sh
+bun run build
+```
+
+Then run the compiled output:
+
+```sh
+bun dist/main.js start
+```
+
+## Console Mode (Multi-Account Management)
+
+Console mode starts a web UI for managing multiple GitHub Copilot accounts with load balancing.
+
+### 1. Build the Web UI (first time only)
+
+```sh
+cd web && bun install && bun run build
+cd ..
+```
+
+### 2. Start Console Mode
+
+```sh
+bun run start console --web-port 3000 --proxy-port 4141
+```
+
+| Option | Description | Default |
+| --- | --- | --- |
+| `--web-port` / `-w` | Port for the web management console | 3000 |
+| `--proxy-port` / `-p` | Port for the proxy API endpoints | 4141 |
+| `--auto-start` | Auto-start enabled accounts on launch | true |
+| `--verbose` / `-v` | Enable verbose logging | false |
+
+### 3. Set Up Admin Account
+
+Open `http://localhost:3000` in your browser. On first visit you will be prompted to create an admin username and password (minimum 6 characters).
+
+### 4. Add Accounts
+
+Click **Add Account** in the dashboard and authenticate via GitHub Device Flow, or paste a GitHub token directly.
+
+### 5. Using the API Key
+
+After adding and starting an account, each account has its own **API Key** shown on its card.
+
+**Single-account mode** (use a specific account's key):
+
+```
+Base URL: http://localhost:4141/v1
+API Key:  <account API key from the dashboard>
+```
+
+**Pool mode** (load-balance across all enabled accounts):
+
+Enable Pool in the dashboard to get a shared API Key. Choose a strategy:
+- `round-robin` — distribute requests evenly across accounts
+- `priority` — route to the highest-priority available account
+
+```
+Base URL: http://localhost:4141/v1
+API Key:  <pool API key from the dashboard>
+```
+
+Both keys are used as a standard Bearer token. They work with any OpenAI-compatible or Anthropic-compatible client — just point the client's base URL to `http://localhost:4141/v1` and set the API key accordingly.
+
 ## Usage Tips
 
 - To avoid hitting GitHub Copilot's rate limits, you can use the following flags:
