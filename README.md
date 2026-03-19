@@ -51,10 +51,44 @@ https://github.com/user-attachments/assets/7654b383-669d-4eb9-b23c-06d7aefee8c5
 
 ## Installation
 
-To install dependencies, run:
+### Global Installation (Recommended)
+
+Install `copilot-api` globally so you can use it as a command anywhere:
+
+```sh
+# Using npm
+npm install -g copilot-api
+
+# Using bun
+bun install -g copilot-api
+```
+
+Once installed, run it directly:
+
+```sh
+copilot-api start
+```
+
+### Using npx (No Install Required)
+
+Run without installing using npx — always fetches the latest version:
+
+```sh
+npx copilot-api@latest start
+```
+
+### Installing from Source
+
+Clone the repository and install dependencies:
 
 ```sh
 bun install
+```
+
+Then link it globally so the `copilot-api` command is available system-wide:
+
+```sh
+npm link
 ```
 
 ## Using with Docker

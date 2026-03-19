@@ -68,15 +68,19 @@ function translateModelName(model: string): string {
     result = result.replace(bracketSuffixPattern, "")
   }
 
-  // Strip 8-digit date suffixes like -20250514
-  const dateSuffixPattern = /-\d{8}$/
+  // Strip date suffixes in either compact or dashed form:
+  //   -20250514       (8 consecutive digits, e.g. from Anthropic API)
+  //   -2025-04-14     (YYYY-MM-DD, e.g. "gpt-4.1-2025-04-14" from OpenAI)
+  const dateSuffixPattern = /(-\d{8}|-\d{4}-\d{2}-\d{2})$/
   if (dateSuffixPattern.test(result)) {
     result = result.replace(dateSuffixPattern, "")
   }
 
   // Convert hyphen minor version to dot: "claude-haiku-4-5" → "claude-haiku-4.5"
-  // Matches: word-N-N at the end where the last segment is a short version number
-  const hyphenMinorVersionPattern = /^(.*-\d+)-(\d+)$/
+  // Only applies when the last two segments are both short numbers (1-2 digits),
+  // to avoid mismatching version-like segments in model names that already had
+  // their date suffix stripped (e.g. "gpt-4.1" should stay as-is).
+  const hyphenMinorVersionPattern = /^(.*-\d+)-(\d{1,2})$/
   const match = hyphenMinorVersionPattern.exec(result)
   if (match) {
     result = `${match[1]}.${match[2]}`

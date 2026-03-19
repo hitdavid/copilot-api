@@ -12,6 +12,7 @@ import {
   type ChatCompletionChunk,
   type ChatCompletionResponse,
 } from "~/services/copilot/create-chat-completions"
+import { createChatCompletionsViaResponses } from "~/services/copilot/create-responses"
 
 import {
   type AnthropicMessagesPayload,
@@ -57,7 +58,23 @@ export async function handleCompletion(c: Context) {
     await awaitApproval()
   }
 
-  const response = await createChatCompletions(openAIPayload)
+  // Some models (e.g. gpt-5.4, gpt-5.x-codex) only support /responses, not
+  // /chat/completions. Route them through the responses adapter instead.
+  const supportedEndpoints = selectedModel?.supported_endpoints ?? []
+  const useResponsesEndpoint =
+    supportedEndpoints.length > 0 &&
+    supportedEndpoints.includes("/responses") &&
+    !supportedEndpoints.includes("/chat/completions")
+
+  if (useResponsesEndpoint) {
+    consola.info(
+      `Model "${openAIPayload.model}" only supports /responses — routing via responses adapter`,
+    )
+  }
+
+  const response = useResponsesEndpoint
+    ? await createChatCompletionsViaResponses(openAIPayload)
+    : await createChatCompletions(openAIPayload)
 
   if (isNonStreaming(response)) {
     consola.debug(

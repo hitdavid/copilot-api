@@ -55,4 +55,5 @@ export interface Model {
     state: string
     terms: string
   }
+  supported_endpoints?: string[]
 }
