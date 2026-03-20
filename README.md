@@ -453,3 +453,13 @@ Both keys are used as a standard Bearer token. They work with any OpenAI-compati
   - `--rate-limit <seconds>`: Enforces a minimum time interval between requests. For example, `copilot-api start --rate-limit 30` will ensure there's at least a 30-second gap between requests.
   - `--wait`: Use this with `--rate-limit`. It makes the server wait for the cooldown period to end instead of rejecting the request with an error. This is useful for clients that don't automatically retry on rate limit errors.
 - If you have a GitHub business or enterprise plan account with Copilot, use the `--account-type` flag (e.g., `--account-type business`). See the [official documentation](https://docs.github.com/en/enterprise-cloud@latest/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-access-to-github-copilot-in-your-organization/managing-github-copilot-access-to-your-organizations-network#configuring-copilot-subscription-based-network-routing-for-your-enterprise-or-organization) for more details.
+
+
+## Important commands with Claude code
+
+curl -fsSL https://bun.sh/install | bash
+cd web && bun install && bun run build
+cd ..
+bun run start console --web-port 3000 --proxy-port 4141
+vi ~/.claude/settings.json
+set api key in settings.json with the key copied in http://localhost:3000
