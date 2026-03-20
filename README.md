@@ -457,9 +457,9 @@ Both keys are used as a standard Bearer token. They work with any OpenAI-compati
 
 ## Important commands with Claude code
 
-curl -fsSL https://bun.sh/install | bash
-cd web && bun install && bun run build
-cd ..
-bun run start console --web-port 3000 --proxy-port 4141
-vi ~/.claude/settings.json
-set api key in settings.json with the key copied in http://localhost:3000
+curl -fsSL https://bun.sh/install | bash   
+cd web && bun install && bun run build   
+cd ..   
+bun run start console --web-port 3000 --proxy-port 4141   
+vi ~/.claude/settings.json   
+set api key in settings.json with the key copied in http://localhost:3000   
